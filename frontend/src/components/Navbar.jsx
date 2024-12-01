@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { TfiAlignJustify, TfiClose } from "react-icons/tfi";
-import { IKImage } from "imagekitio-react";
 import Image from "./Image";
 
 function Navbar() {

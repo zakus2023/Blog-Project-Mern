@@ -1,4 +1,4 @@
-import { IKImage } from "imagekitio-react";
+import {IKImage} from 'imagekitio-react'
 import React from "react";
 
 function Image({ path, className, alt }) {
