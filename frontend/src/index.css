@@ -3,8 +3,23 @@
 @tailwind utilities;
 
 body {
-    background-color: #e6e6ff;
-    width: 100vw;
-    overflow: hidden;
-    font-family: "Montserrat", sans-serif;
+  background-color: #e6e6ff;
+  height: 100vh;
+  font-family: "Montserrat", sans-serif;
 }
+
+.animationButton {
+  animation-duration: 10000ms;
+}
+
+/* This was addded for the react-quil editor */
+.ql-container{
+  border: none !important;
+}
+.ql-toolbar{
+  border: none !important;
+}
+.ql-editor{
+  border: none !important;
+}
+
