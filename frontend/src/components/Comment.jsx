@@ -1,45 +1,26 @@
 import React from "react";
 import Image from "./Image";
+import { format } from "timeago.js";
 
-function Comment() {
+function Comment({ postId, comment }) {
   return (
     <div className="">
       <div className="p-4 bg-slate-50 rounded-xl mb-8">
         <div className="flex items-center gap-4">
-          <Image
-            path="/userImg.jpeg"
-            className="w-10 h-10 rounded-full object-cover"
-            w="40"
-          />
-          <span className="font-medium">Adnan Issah</span>
-          <span className="text-sm text-gray-500">2 days ago</span>
+          {comment.user.img && (
+            <Image
+              path={comment.user.img}
+              className="w-10 h-10 rounded-full object-cover"
+              w="40"
+            />
+          )}
+          <span className="font-medium">{comment.user.username}</span>
+          <span className="text-sm text-gray-500">
+            {format(comment.createdAt)}
+          </span>
         </div>
         <div className="mt-2">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat
-            aliquam nesciunt cupiditate, praesentium voluptate eaque
-            necessitatibus, itaque ad maiores consequuntur repudiandae molestias
-            voluptates at, tenetur eveniet laborum inventore nihil tempore?
-          </p>
-        </div>
-      </div>
-      <div className="p-4 bg-slate-50 rounded-xl mb-8">
-        <div className="flex items-center gap-4">
-          <Image
-            path="/userImg.jpeg"
-            className="w-10 h-10 rounded-full object-cover"
-            w="40"
-          />
-          <span className="font-medium">Adnan Issah</span>
-          <span className="text-sm text-gray-500">2 days ago</span>
-        </div>
-        <div className="mt-2">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat
-            aliquam nesciunt cupiditate, praesentium voluptate eaque
-            necessitatibus, itaque ad maiores consequuntur repudiandae molestias
-            voluptates at, tenetur eveniet laborum inventore nihil tempore?
-          </p>
+          <p>{comment.desc}</p>
         </div>
       </div>
     </div>

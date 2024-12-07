@@ -15,7 +15,7 @@ function PostListPage() {
         {open ? "Close" : "Filter or Search"}
       </button>
       <div className="flex gap-8 flex-col-reverse md:flex-row">
-        <div>
+        <div className="flex-1">
           <PostListComponent />
         </div>
         <div className={`${open ? "block" : "hidden"} md:block`}>

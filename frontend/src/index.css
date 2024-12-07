@@ -23,3 +23,16 @@ body {
   border: none !important;
 }
 
+/* for removing the white bg of the content-text from the editor */
+.custom-content {
+  background-color: #f0f8ff; /* Example: light blue */
+  padding: 1rem;           /* Optional: Add padding for better appearance */
+  border-radius: 8px;      /* Optional: Add rounded corners */
+  color: #333;             /* Optional: Change text color */
+}
+
+/* Ensure all child elements within the content have the desired background */
+.custom-content * {
+  background-color: inherit !important; /* Inherit the parent's background color */
+}
+
