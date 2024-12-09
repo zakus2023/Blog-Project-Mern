@@ -60,6 +60,8 @@ function PostMenuAction({ post }) {
     },
   });
 
+  // check if the current user has an admin role
+  const isAdmin = user?.publicMetadata?.role === "admin" || false;
   // Determine if the current post is saved by the user
   const isSaved = savedPosts?.data?.some((p) => p === post._id) || false;
 
@@ -95,20 +97,78 @@ function PostMenuAction({ post }) {
       toast.error(errorMessage);
     },
   });
-  
+
   const handleDelete = () => {
-    
     if (!user) {
       return navigate("/login");
     }
     deleteMutation.mutate();
   };
-  
+
   // ======================================================
+
+  // Featured
+  const featureMutation = useMutation({
+    mutationFn: async () => {
+      const token = await getToken(); // Await token retrieval
+      return await axios.patch(
+        `${API_URL}/api/v1/posts/feature`,
+        { postId: post._id }, // Example request body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in Authorization header
+          },
+        }
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post", post.slug] }); // Adjust query key
+      toast.success("Post feature status updated successfully");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error.response?.data?.message || "An error occurred"; // Safeguard error handling
+      toast.error(errorMessage);
+    },
+  });
+  
+  const handleFeatured = () => {
+    if (!user) {
+      return navigate("/login");
+    }
+    featureMutation.mutate();
+  };
+  
+
+  // ==============================================
 
   return (
     <div className="mt-3">
       <h1 className="mt-8 mb-4 text-sm font-medium">Actions</h1>
+
+      {isAdmin && (
+        <div
+          className="flex items-center gap-2 py-2 text-sm cursor-pointer"
+          onClick={handleFeatured}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 48 48"
+            width="20px"
+            height="20px"
+          >
+            <path
+              d="M24 2L29.39 16.26L44 18.18L33 29.24L35.82 44L24 37L12.18 44L15 29.24L4 18.18L18.61 16.26L24 2Z"
+              stroke="black"
+              strokeWidth="2"
+              fill={post.isFeatured ? "black" : "none"}
+            />
+          </svg>
+          <span>Feature this post</span>
+
+          <span className="text-xs"></span>
+        </div>
+      )}
 
       {/* Save post action */}
       <div
@@ -128,14 +188,20 @@ function PostMenuAction({ post }) {
             fill={isSaved ? "black" : "none"} // Change fill based on `isSaved` status
           />
         </svg>
-        <span>{user ? "Save this post" : "Login to save"}</span>
+        <span>
+          {user && isSaved
+            ? "Unsave this post"
+            : user && !isSaved
+            ? "Save this post"
+            : "Login to save"}
+        </span>
         {saveMutation.isPending && (
           <span className="text-xs">(in progress)</span>
         )}
       </div>
 
       {/* Conditionally render delete action if the post belongs to the current user */}
-      {user && post.user.username === user.username && (
+      {user && (post.user.username === user.username || isAdmin) && (
         <div
           className="flex gap-2 items-center py-2 text-sm cursor-pointer"
           onClick={user ? () => handleDelete() : navigate("/login")}
@@ -151,6 +217,7 @@ function PostMenuAction({ post }) {
           </svg>
 
           <span>Delete this post</span>
+          {deleteMutation.isPending && <span>Wait deletion in progress</span>}
         </div>
       )}
     </div>

@@ -1,9 +1,9 @@
 import React from "react";
 import Image from "./Image";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { format } from "timeago.js";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+
+
 
 // {post} the post is from the PostListComponent.jsx it was passed as props and was accepted here
 function PostComponent({ post }) {
@@ -22,7 +22,7 @@ function PostComponent({ post }) {
         </Link>
         <div className="flex items-center gap-2 text-gray-400 text-sm">
           <span>Written by</span>
-          <Link className="text-blue-800">{post.user.username}</Link>
+          <Link to={`/posts?author=${post.user.username}`} className="text-blue-800">{post.user.username}</Link>
           <span>on</span>
           <Link className="text-blue-800">{post.category}</Link>
           <span>{format(post.createdAt)}</span>

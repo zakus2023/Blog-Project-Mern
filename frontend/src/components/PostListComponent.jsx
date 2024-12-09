@@ -1,66 +1,82 @@
 // Importing necessary libraries and components
 import React from "react"; // React library for creating components and managing UI
 import PostComponent from "./PostComponent"; // A custom component for rendering individual posts
-import { useInfiniteQuery } from "@tanstack/react-query"; // A React Query hook for handling infinite scrolling data
+import { useInfiniteQuery } from "@tanstack/react-query"; // React Query hook for managing infinite scrolling data
 import axios from "axios"; // A library for making HTTP requests
-import InfiniteScroll from "react-infinite-scroll-component"; // A library to implement infinite scrolling functionality
+import InfiniteScroll from "react-infinite-scroll-component"; // Library for implementing infinite scrolling
+import { useSearchParams } from "react-router-dom"; // A hook for handling query parameters in the URL
 
-// API URL from environment variables (configured during build time)
+// API base URL is configured in environment variables
 const API_URL = import.meta.env.VITE_API_URL;
 
 function PostListComponent() {
-  // A function to fetch posts from the server
-  const fetchPosts = async (pageParam) => {
-    // Make an HTTP GET request to fetch posts for the given page
+  // State to handle search and sort parameters from the URL
+  const [searchParam, setSearchParam] = useSearchParams(); 
+
+  // Function to fetch posts from the server
+  const fetchPosts = async (pageParam, searchParam) => {
+    // Convert the search parameters into an object for easier manipulation
+    const searchObj = Object.fromEntries([...searchParam]);
+
+    // Make an HTTP GET request to the API endpoint
     const response = await axios.get(`${API_URL}/api/v1/posts/post-list`, {
-      params: { page: pageParam }, // Pass `pageParam` as a query parameter (e.g., ?page=1)
+      params: { 
+        page: pageParam, // Current page to fetch
+        limit: 5, // Number of posts per page
+        ...searchObj, // Additional query parameters for search and sorting
+      },
     });
 
-    return response.data; // Return the response data containing posts and metadata
+    return response.data; // Return the response data (posts and metadata)
   };
 
-  // Destructure values from the useInfiniteQuery hook
+  // React Query hook for infinite scrolling
   const {
-    data, // The data fetched from the server (contains all pages of results)
-    error, // Contains error information if the query fails
-    fetchNextPage, // A function to fetch the next page of data
-    hasNextPage, // Boolean indicating if there are more pages to load
-    isFetching, // Boolean indicating if a fetch request is currently in progress
-    isFetchingNextPage, // Boolean indicating if the next page is currently being fetched
+    data, // Contains the fetched data (all pages of posts)
+    error, // Holds error information if the request fails
+    fetchNextPage, // Function to fetch the next page of posts
+    hasNextPage, // Boolean to indicate if there are more pages to load
+    isFetching, // Boolean to show if data is currently being fetched
+    isFetchingNextPage, // Boolean for checking if the next page is being fetched
     status, // The current status of the query (e.g., 'loading', 'error', 'success')
   } = useInfiniteQuery({
-    queryKey: ["posts"], // A unique key to identify this query
-    queryFn: ({ pageParam = 1 }) => fetchPosts(pageParam), // Fetch function with the default page parameter
-    initialPageParam: 1, // The initial page to start fetching from
+    // A unique key to cache and identify this query
+    queryKey: ["posts", searchParam.toString()],
+    // The function to fetch data
+    queryFn: ({ pageParam = 1 }) => fetchPosts(pageParam, searchParam),
+    // The initial page to start fetching from
+    initialPageParam: 1,
+    // Function to determine the next page to fetch
     getNextPageParam: (lastPage, pages) =>
-      // Define how to determine the next page
-      lastPage.hasMore ? pages.length + 1 : undefined, // If there are more posts, increment the page number
+      lastPage.hasMore ? pages.length + 1 : undefined,
   });
 
-  // Show a loading message while data is being fetched
+  // If data is still loading, display a loading message
   if (status === "loading") return "Loading...";
 
-  // Show an error message if the query fails
+  // If an error occurred during the fetch, show an error message
   if (status === "error") return "An error has occurred: " + error.message;
 
-  // Flatten all pages of posts into a single array
+  // Combine all fetched pages of posts into a single array
   const allPosts = data?.pages?.flatMap((page) => page.posts) || [];
 
-  // Render the list of posts with infinite scrolling
+  // Render the list of posts using infinite scrolling
   return (
     <InfiniteScroll
-      dataLength={allPosts.length} // The current total number of posts loaded
-      next={fetchNextPage} // Function to fetch the next page when the user scrolls
-      hasMore={!!hasNextPage} // Whether there are more posts to fetch
-      loader={<h4>Loading more posts...</h4>} // Loader displayed while fetching more posts
+      dataLength={allPosts.length} // Total number of posts loaded so far
+      next={fetchNextPage} // Function to fetch the next page of posts
+      hasMore={!!hasNextPage} // Check if there are more posts to load
+      loader={<h4>Loading more posts...</h4>} // Message displayed while fetching more posts
       endMessage={
         // Message displayed when all posts are loaded
-        <p style={{ textAlign: "left", marginBottom: "20px", marginTop: "20px" }}>
+        <p
+          style={{ textAlign: "left", marginBottom: "20px", marginTop: "20px" }}
+        >
           <b>You have reached the end of the post list</b>
         </p>
       }
     >
-      {/* Render each post using the PostComponent */}
+      {/* Loop through all posts and render each one using the PostComponent */}
       {allPosts.map((post) => (
         <PostComponent key={post._id} post={post} />
       ))}

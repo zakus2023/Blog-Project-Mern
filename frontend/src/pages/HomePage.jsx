@@ -23,11 +23,12 @@ function HomePage() {
         <div>
           <h1 className="text-gray-800 text-2xl md:text-5xl lg:text-6xl font-bold">
             {" "}
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+            Welcome to Abdul Dev Blog
           </h1>
           <p className="mt-8 text-md md:text-xl">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Earum et
-            dolore amet.
+            A hub for web development, programming, and cloud computing
+            insights. Find tutorials, tips, and the latest trends to enhance
+            your skills and stay ahead in the tech world.
           </p>
         </div>
         {/* animated button */}
@@ -76,13 +77,13 @@ function HomePage() {
         </Link>
       </div>
       {/* CATEGORIES COMPONENT */}
-      <MainCategories/>
+      <MainCategories />
       {/* FEATURED POSTS */}
-      <FeaturedPosts/>
+      <FeaturedPosts />
       {/* Recenet Posts */}
       <div className="">
         <h1 className="my-8 text-2xl text-gray-600">Recenet Posts</h1>
-        <PostListComponent/>
+        <PostListComponent />
       </div>
     </div>
   );
