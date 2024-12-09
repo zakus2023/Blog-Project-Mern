@@ -14,7 +14,7 @@ const FeaturedPosts = () => {
 
   const fetchPost = async () => {
     const res = await axios.get(
-      `${API_URL}/api/v1/posts/post-list?featured=true&sort=trending&limit=4&sort=newest`
+      `${API_URL}/api/v1/posts/post-list?featured=true&limit=4&sort=newest`
     );
     return res.data;
   };
